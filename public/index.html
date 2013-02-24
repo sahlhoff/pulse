@@ -11,7 +11,17 @@
     <link rel='stylesheet' href='/css/style.css'></link>
   </head>
   <body>
-    <div id='placeholder' style='width: 300px; height: 300px'></div>
-    <div id='heartrate_container'><span class='heart'>&hearts;</span><span id='heartrate'>0</span></div>
+    <div id="monitor">
+      <div id="raw">
+        <div id="raw_title">RAW DATA</div>
+        <div id='placeholder'></div>
+          <div id='heartrate_container'><span class='heart'>&hearts;</span><span id='heartrate'>0</span></div>
+      </div>
+      <div id="output">
+        <div id="output_title">OUTPUT DATA</div>
+        <div id='output_placeholder'></div>
+          <div id='output_heartrate_container'><span class='output_heart'>&hearts;</span><span id='output_heartrate'>0</span></div>
+      </div>
+    </div>
   </body>
 </html>

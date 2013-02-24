@@ -1,36 +1,53 @@
 $(function () {
   var pulse = io.connect('/pulse'),
       pulse_data = [],
-      plot,
+      raw_plot,
+      output_plot,
       totalPoints = 100,
       lastPeak = Date.now(),
       peakDiffs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       freq = 0,
-      y_min = 20,
-      y_max = 50;
+      y_min = 0,
+      y_max = 0;
 
   pulse.on('pulse', function (data) {
     pulse_data.push(data)
     pulse_data.shift();
 
-    plot.setData([ parse_data() ]);
-    plot.draw();
 
-    if (data < pulse_data[totalPoints - 2] - .2) {
-      freq = Date.now() - lastPeak;
-      lastPeak = Date.now();
+    raw_plot.setData([ parse_data() ]);
+    raw_plot.draw();
+    output_plot.setData([ parse_data() ]);
+    output_plot.draw();
 
-      peakDiffs.push(freq);
-      peakDiffs.shift();
+      if ((data > pulse_data[totalPoints - 2] - .2) & (data > pulse_data[totalPoints - 7] - .2)){
+        freq = Date.now() - lastPeak;
+        lastPeak = Date.now();
 
-      var peak_sum = 0;
-      for (var i = 0; i < peakDiffs.length; i++) {
-        peak_sum += peakDiffs[i];
+        peakDiffs.push(freq);
+        peakDiffs.shift();
+
+
+        var peak_sum = 0;
+        
+        for (var i = 0; i < peakDiffs.length; i++) {
+          peak_sum += peakDiffs[i];
+        }
+
+        /*
+        console.log('peak_sum =' + peak_sum);
+        console.log('Avg =' + (peak_sum / peakDiffs.length));
+        console.log('Scaled =' + ((peak_sum / peakDiffs.length) / 1000));
+        console.log('Unknown =' + (60 / ((peak_sum / peakDiffs.length) / 1000)));
+        console.log('next');
+        */
+
+        heart_rate = parseInt(60 / ((peak_sum / peakDiffs.length) / 1000), 10);
+
+        $('#heartrate').html(heart_rate);
+        $('#output_heartrate').html(heart_rate);
       }
-      heart_rate = parseInt(60 / ((peak_sum / peakDiffs.length) / 1000), 10);
-      $('#heartrate').html(heart_rate);
-    }
-  });
+    });
 
   // pre-fill pulse_data with all zeroes
   while (pulse_data.length < totalPoints) {
@@ -66,16 +83,22 @@ $(function () {
         series: {
           shadowSize: 0,
         },
-        yaxis: { show: false, min: min, max: max },
+        yaxis: { show: false, min: 0, max: 120 },
         xaxis: { show: false },
         grid: { show: true, borderWidth: 0 },
     };
 
-    plot = $.plot($("#placeholder"), [ parse_data() ], options);
+    raw_plot = $.plot($("#placeholder"), [ parse_data() ], options);
+    output_plot = $.plot($("#output_placeholder"), [ parse_data() ], options);
   }
 
   $('#placeholder').css({
-    width: '100%',
+    //width: '100%',
+    height: $('body').height() + 'px'
+  })
+
+  $('#output_placeholder').css({
+    //width: '100%',
     height: $('body').height() + 'px'
   })
 

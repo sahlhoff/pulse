@@ -20,10 +20,10 @@ board.on("ready", function() {
   // Create a new `sensor` hardware instance.
   sensor = new five.Sensor({
     pin: "A5",
-    freq: 25
+    freq: 20
   });
 
-  sensor.scale([ 50, 100 ]).on("read", function() {
+  sensor.scale([ 0, 100 ]).on("read", function() {
     pulse.emit('pulse', this.scaled);
   });
 });
